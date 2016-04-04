@@ -30,6 +30,7 @@ const gatherers = [
   require('./gatherers/service-worker'),
   require('./gatherers/viewport'),
   require('./gatherers/theme-color'),
+  require('./gatherers/sandboxed-iframes'),
   require('./gatherers/html'),
   require('./gatherers/manifest')
 ];
@@ -46,7 +47,8 @@ const audits = [
   require('./audits/manifest/name'),
   require('./audits/manifest/short-name'),
   require('./audits/manifest/start-url'),
-  require('./audits/html/meta-theme-color')
+  require('./audits/html/meta-theme-color'),
+  require('./audits/ux/no-plugins')
 ];
 const aggregators = [
   require('./aggregators/will-get-add-to-homescreen-prompt'),
@@ -55,7 +57,8 @@ const aggregators = [
   require('./aggregators/can-load-offline'),
   require('./aggregators/is-secure'),
   require('./aggregators/is-performant'),
-  require('./aggregators/is-sized-for-mobile-screen')
+  require('./aggregators/is-sized-for-mobile-screen'),
+  require('./aggregators/has-no-plugins')
 ];
 
 module.exports = function(opts) {
