@@ -45,8 +45,6 @@ class NoPlugins extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    console.log(artifacts.sandboxedIframes, artifacts.hasNoObjects);
-
     // Early exit if there are any iframes that aren't sandboxed.
     if (!artifacts.sandboxedIframes) {
       return NoPlugins.generateAuditResult(false);
