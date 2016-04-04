@@ -45,6 +45,8 @@ class NoPlugins extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
+    console.log(artifacts.sandboxedIframes, artifacts.hasNoObjects);
+
     // Early exit if there are any iframes that aren't sandboxed.
     if (!artifacts.sandboxedIframes) {
       return NoPlugins.generateAuditResult(false);
@@ -53,6 +55,12 @@ class NoPlugins extends Audit {
     // Same if there are no network records.
     if (!artifacts.networkRecords) {
       return NoPlugins.generateAuditResult(false);
+    }
+
+    // If there are sandboxed iframes, and there are no objects in the page, this should mean
+    // the page is good and we can early exit with success.
+    if (artifacts.sandboxedIframes && artifacts.hasNoObjects) {
+      return NoPlugins.generateAuditResult(true);
     }
 
     const noObject = /object-src\s+'none'/gim;

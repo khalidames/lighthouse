@@ -31,6 +31,10 @@ DriverStub.sendCommand = function(command, params) {
       return Promise.resolve({
         nodeId: params.selector === 'invalid' ? 0 : 231
       });
+    case 'DOM.querySelectorAll':
+      return params.selector === 'invalid' ?
+          Promise.resolve([]) :
+          Promise.resolve([231, 123]);
     default:
       throw Error(`Stub not implemented: ${command}`);
   }
@@ -47,6 +51,20 @@ describe('Browser Driver', () => {
   it('returns element when DOM.querySelector finds node', () => {
     return DriverStub.querySelector('meta head').then(value => {
       assert.equal(value instanceof Element, true);
+    });
+  });
+
+  it('returns elements when DOM.querySelectorAll finds nodes', () => {
+    return DriverStub.querySelector('invalid').then(value => {
+      assert.equal(Array.isArray(value), true);
+      assert.equal(value.length, 0);
+    });
+  });
+
+  it('returns elements when DOM.querySelectorAll finds nodes', () => {
+    return DriverStub.querySelector('div').then(value => {
+      assert.equal(Array.isArray(value), true);
+      assert.equal(value.length, 2);
     });
   });
 });

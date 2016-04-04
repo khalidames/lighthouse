@@ -31,6 +31,7 @@ const gatherers = [
   require('./gatherers/viewport'),
   require('./gatherers/theme-color'),
   require('./gatherers/sandboxed-iframes'),
+  require('./gatherers/objects'),
   require('./gatherers/html'),
   require('./gatherers/manifest')
 ];
