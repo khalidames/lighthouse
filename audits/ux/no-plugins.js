@@ -23,7 +23,7 @@ class NoPlugins extends Audit {
    * @override
    */
   static get tags() {
-    return ['Security'];
+    return ['UX'];
   }
 
   /**
