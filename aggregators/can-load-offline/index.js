@@ -28,6 +28,7 @@ class WorksOffline extends Aggregate {
 
   /**
    * @override
+   * @return {string}
    */
   static get name() {
     return 'Works Offline';
@@ -35,7 +36,7 @@ class WorksOffline extends Aggregate {
 
   /**
    * @override
-   * @return
+   * @return {!AggregationCriteria}
    */
   static get criteria() {
     const criteria = {};
