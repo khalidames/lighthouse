@@ -100,6 +100,10 @@ class FirstMeaningfulPaint extends Audit {
       return undefined;
     }
 
+    if (!artifacts.blockingResources) {
+      return undefined;
+    }
+
     // Attempt to figure out what the blocking resources are in the page.
     const recommendedActions = artifacts.blockingResources
         .map(resource => {
