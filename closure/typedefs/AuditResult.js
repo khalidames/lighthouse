@@ -47,7 +47,7 @@ AuditResult.prototype.rawValue;
 /** @type {(string|undefined)} */
 AuditResult.prototype.debugString;
 
-/** @type {(Array<!AuditRecommendations>|undefined)} */
+/** @type {(Array<!AuditRecommendedAction>|undefined)} */
 AuditResult.prototype.recommendedActions;
 
 /** @type {string} */

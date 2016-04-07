@@ -92,7 +92,7 @@ class FirstMeaningfulPaint extends Audit {
    * Generates some recommended actions for FMP.
    * @param {number} score The score to determine if we need to bother.
    * @param {!Artifacts} artifacts The artifacts from the gather phase.
-   * @return {Array<!AuditRecommendedAction>}
+   * @return {Array<!AuditRecommendedAction>|undefined}
    */
   static generateRecommendedActions(score, artifacts) {
     // If there is a score of 100 no further action is required.
