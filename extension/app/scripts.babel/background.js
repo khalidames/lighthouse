@@ -21,10 +21,13 @@ const ExtensionProtocol = require('../../../helpers/extension/driver.js');
 const runner = require('../../../runner');
 const driver = new ExtensionProtocol();
 
-window.runAudits = function() {
-  return runner(driver, {url: driver.getCurrentTabURL()})
-    .then(results => createResultsHTML(results))
-    .catch(returnError);
+window.RELOAD_PAGE_AND_RUN_ALL_TESTS = true;
+
+window.runAudits = function(reloadPageAndRunAllTests) {
+  return driver.getCurrentTabURL()
+      .then(url => runner(driver, {url, reloadPageAndRunAllTests}))
+      .then(results => createResultsHTML(results))
+      .catch(returnError);
 };
 
 function returnError(err) {

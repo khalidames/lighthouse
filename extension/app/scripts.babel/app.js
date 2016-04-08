@@ -19,9 +19,16 @@ document.addEventListener('DOMContentLoaded', _ => {
   const background = chrome.extension.getBackgroundPage();
   const siteNameEl = window.document.querySelector('header h2');
   const resultsEl = document.body.querySelector('.results');
+  const reloadAndRunAllEl = document.body.querySelector('.reload-all');
 
   background.runAudits().then(ret => {
     resultsEl.innerHTML = ret;
+  });
+
+  reloadAndRunAllEl.addEventListener('click', () => {
+    background.runAudits(background.RELOAD_PAGE_AND_RUN_ALL_TESTS).then(ret => {
+      resultsEl.innerHTML = ret;
+    });
   });
 
   chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {

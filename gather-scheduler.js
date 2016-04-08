@@ -28,6 +28,7 @@ class GatherScheduler {
   static run(gatherers, options) {
     const driver = options.driver;
     const url = options.url;
+    const reloadPageAndRunAllTests = options.reloadPageAndRunAllTests;
     const tracingData = {};
     const artifacts = [];
 
@@ -44,7 +45,7 @@ class GatherScheduler {
       .then(_ => this._runPhase(gatherers,
           gatherer => gatherer.beforePageLoad(options)))
 
-      .then(_ => driver.gotoURL(url, driver.WAIT_FOR_LOADED))
+      .then(_ => driver.gotoURL(url, driver.WAIT_FOR_LOADED, reloadPageAndRunAllTests))
 
       .then(_ => this._runPhase(gatherers,
           gatherer => gatherer.afterPageLoad(options)))

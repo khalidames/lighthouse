@@ -154,20 +154,46 @@ class ExtensionProtocol extends ChromeProtocol {
     });
   }
 
-  // Stubs to bypass a page reload for now.
-  /* eslint-disable no-unused-vars */
   off(eventName, cb) {
-    return undefined;
+    if (typeof this._listeners[eventName] === 'undefined') {
+      return;
+    }
+
+    const callbackIndex = this._listeners[eventName].indexOf(cb);
+    if (callbackIndex === -1) {
+      return;
+    }
+
+    this._listeners[eventName].splice(callbackIndex, 1);
   }
 
-  gotoURL(url, waitForLoad) {
+  gotoURL(url, waitForLoaded, reloadPageAndRunAllTests) {
+    if (reloadPageAndRunAllTests) {
+      return new Promise((resolve, reject) => {
+        Promise.resolve()
+        .then(_ => this.sendCommand('Page.enable'))
+        .then(_ => this.sendCommand('Page.navigate', {url: url}))
+        .then(response => {
+          this.url = url;
+
+          if (!waitForLoaded) {
+            return resolve(response);
+          }
+          this.on('Page.loadEventFired', response => {
+            setTimeout(_ => {
+              resolve(response);
+            }, this.PAUSE_AFTER_LOAD);
+          });
+        });
+      });
+    }
+
     return Promise.resolve();
   }
 
   pendingCommandsComplete() {
     return Promise.resolve();
   }
-  /* eslint-enable no-unused-vars */
 }
 
 module.exports = ExtensionProtocol;
