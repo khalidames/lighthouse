@@ -17,12 +17,14 @@
 
 'use strict';
 
-import {runPwaAudits} from './pwa-check.js';
+const ExtensionProtocol = require('../../../helpers/extension/driver.js');
+const runner = require('../../../runner');
+const driver = new ExtensionProtocol();
 
 window.runAudits = function() {
-  return runPwaAudits(chrome).then(results => {
-    return createResultsHTML(results);
-  }).catch(returnError);
+  return runner(driver, {url: driver.getCurrentTabURL()})
+    .then(results => createResultsHTML(results))
+    .catch(returnError);
 };
 
 function returnError(err) {

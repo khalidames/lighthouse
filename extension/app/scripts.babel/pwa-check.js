@@ -16,11 +16,3 @@
  */
 'use strict';
 
-const ExtensionProtocol = require('../../../helpers/extension/driver.js');
-const runner = require('../../../runner');
-
-const driver = new ExtensionProtocol();
-
-export function runPwaAudits() {
-  return runner(driver, {url: driver.getCurrentTabURL()});
-}
