@@ -36,7 +36,7 @@ class GatherScheduler {
       throw new Error('You must provide a url to scheduler');
     }
 
-    return driver.connect()
+    return driver.connect(reloadPageAndRunAllTests)
       .then(_ => this._runPhase(gatherers,
           gatherer => gatherer.setup(options)))
       .then(_ => driver.beginTrace())

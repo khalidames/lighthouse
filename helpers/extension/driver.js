@@ -17,6 +17,7 @@
 'use strict';
 
 const ChromeProtocol = require('../browser/driver.js');
+const emulation = require('../emulation');
 
 /* globals chrome */
 
@@ -30,7 +31,7 @@ class ExtensionProtocol extends ChromeProtocol {
     chrome.debugger.onEvent.addListener(this._onEvent.bind(this));
   }
 
-  connect() {
+  connect(reloadPageAndRunAllTests) {
     if (this._debuggerConnected) {
       return Promise.resolve();
     }
@@ -38,7 +39,13 @@ class ExtensionProtocol extends ChromeProtocol {
     return this.queryCurrentTab_()
       .then(tabId => {
         this._tabId = tabId;
-        return this.attachDebugger_(tabId);
+        return this.attachDebugger_(tabId)
+          .then(_ => {
+            if (!reloadPageAndRunAllTests) {
+              return;
+            }
+            return this.beginEmulation();
+          });
       });
   }
 
@@ -193,6 +200,14 @@ class ExtensionProtocol extends ChromeProtocol {
 
   pendingCommandsComplete() {
     return Promise.resolve();
+  }
+
+  beginEmulation() {
+    return Promise.all([
+      emulation.enableNexus5X(this),
+      emulation.enableNetworkThrottling(this),
+      emulation.disableCache(this)
+    ]);
   }
 }
 
