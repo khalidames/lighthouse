@@ -191,14 +191,6 @@ class ExtensionProtocol extends ChromeProtocol {
   pendingCommandsComplete() {
     return Promise.resolve();
   }
-
-  beginEmulation() {
-    return Promise.all([
-      emulation.enableNexus5X(this),
-      emulation.enableNetworkThrottling(this),
-      emulation.disableCache(this)
-    ]);
-  }
 }
 
 module.exports = ExtensionProtocol;
