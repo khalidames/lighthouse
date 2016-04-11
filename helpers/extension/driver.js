@@ -31,7 +31,7 @@ class ExtensionProtocol extends ChromeProtocol {
     chrome.debugger.onEvent.addListener(this._onEvent.bind(this));
   }
 
-  connect(reloadPageAndRunAllTests) {
+  connect() {
     if (this._debuggerConnected) {
       return Promise.resolve();
     }
@@ -39,13 +39,7 @@ class ExtensionProtocol extends ChromeProtocol {
     return this.queryCurrentTab_()
       .then(tabId => {
         this._tabId = tabId;
-        return this.attachDebugger_(tabId)
-          .then(_ => {
-            if (!reloadPageAndRunAllTests) {
-              return;
-            }
-            return this.beginEmulation();
-          });
+        return this.attachDebugger_(tabId);
       });
   }
 
@@ -174,11 +168,7 @@ class ExtensionProtocol extends ChromeProtocol {
     this._listeners[eventName].splice(callbackIndex, 1);
   }
 
-  gotoURL(url, waitForLoaded, reloadPageAndRunAllTests) {
-    if (!reloadPageAndRunAllTests) {
-      return Promise.resolve();
-    }
-
+  gotoURL(url, waitForLoaded) {
     return new Promise((resolve, reject) => {
       Promise.resolve()
       .then(_ => this.sendCommand('Page.enable'))

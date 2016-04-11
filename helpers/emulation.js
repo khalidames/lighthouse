@@ -84,14 +84,6 @@ function enableNexus5X(driver) {
   ]);
 }
 
-function clearCache(driver) {
-  driver.sendCommand('Network.clearBrowserCache');
-}
-
-function disableCache(driver) {
-  return driver.sendCommand('Network.setCacheDisabled', {cacheDisabled: true});
-}
-
 function enableNetworkThrottling(driver) {
   return driver.sendCommand('Network.emulateNetworkConditions', TYPICAL_MOBILE_THROTTLING_METRICS);
 }

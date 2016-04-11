@@ -44,11 +44,8 @@ const aggregators = [
 ];
 
 module.exports = function(driver, opts) {
-  const url = opts.url;
-  const reloadPageAndRunAllTests = opts.reloadPageAndRunAllTests;
-
   return GatherScheduler
-      .run(gatherers, {url, driver, reloadPageAndRunAllTests})
+      .run(gatherers, Object.assign(opts, {driver}))
       .then(artifacts => Auditor.audit(artifacts, audits))
       .then(results => Aggregator.aggregate(aggregators, results));
 };

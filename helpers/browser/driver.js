@@ -70,10 +70,7 @@ class ChromeProtocol {
       chromeRemoteInterface({port: port}, chrome => {
         this._chrome = chrome;
         this.beginLogging();
-
-        this.beginEmulation()
-          .then(_ => this.cleanCaches())
-          .then(resolve);
+        resolve();
       }).on('error', e => reject(e));
     });
   }
@@ -275,15 +272,24 @@ class ChromeProtocol {
     return Promise.all([
       emulation.enableNexus5X(this),
       emulation.enableNetworkThrottling(this)
-    ]);
+    ])
+    .then(_ => this.cleanCaches());
   }
 
   cleanCaches() {
     return Promise.all([
-      emulation.clearCache(this),
-      emulation.disableCache(this),
+      this.clearCache(this),
+      this.disableCache(this),
       this.forceUpdateServiceWorkers()
     ]);
+  }
+
+  clearCache() {
+    return this.sendCommand('Network.clearBrowserCache');
+  }
+
+  disableCache() {
+    return this.sendCommand('Network.setCacheDisabled', {cacheDisabled: true});
   }
 
   forceUpdateServiceWorkers() {

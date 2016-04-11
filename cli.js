@@ -33,7 +33,8 @@ const cli = meow(`
     --verbose      Displays verbose logging
     --quiet        Displays no progress or debug logs
     --json         Output results as JSON
-
+    --mobile       Emulates a Nexus 5X (default=true)
+    --load-page    Loads the page (default=true)
 `);
 
 const defaultUrl = 'https://operasoftware.github.io/pwa-list/';
@@ -42,6 +43,14 @@ const url = cli.input[0] || defaultUrl;
 if (semver.lt(process.version, '5.0.0')) {
   console.error('Lighthouse requires node version 5.0 or newer');
   process.exit(1);
+}
+
+if (typeof cli.flags.mobile === 'undefined') {
+  cli.flags.mobile = true;
+}
+
+if (typeof cli.flags.loadPage === 'undefined') {
+  cli.flags.loadPage = true;
 }
 
 lighthouse({
