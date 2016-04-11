@@ -187,15 +187,11 @@ class ChromeProtocol {
   }
 
   beginTrace() {
-    this._traceEvents = [];
     const tracingOpts = {
       categories: this._traceCategories.join(','),
+      transferMode: 'ReturnAsStream',
       options: 'sampling-frequency=10000'  // 1000 is default and too slow.
     };
-
-    this.on('Tracing.dataCollected', data => {
-      this._traceEvents.push(...data.value);
-    });
 
     return this.connect()
       .then(_ => this.sendCommand('Page.enable'))
@@ -205,15 +201,32 @@ class ChromeProtocol {
   endTrace() {
     return this.connect().then(_ => {
       return new Promise((resolve, reject) => {
-        // Limit trace retrieval execution time.
-        const traceTimeoutId = setTimeout(_ => {
-          reject(new Error('Trace retrieval timed out'));
-        }, TRACE_RETRIEVAL_TIMEOUT);
+        // When all Tracing.dataCollected events have finished, this event fires
+        this.on('Tracing.tracingComplete', streamHandle => {
+          // With our stream we can read a bunch, and if its taking too long,
+          // take a break to the next event cycle and then go again.
+          let isEOF = false;
+          let result = '';
 
-        // When all Tracing.dataCollected events have finished, this event fires.
-        this.on('Tracing.tracingComplete', _ => {
-          clearTimeout(traceTimeoutId);
-          resolve(this._traceEvents);
+          const readArguments = {
+            handle: streamHandle.stream
+          };
+          const onChunkRead = response => {
+            if (isEOF) {
+              return;
+            }
+
+            result += response.data;
+
+            if (response.eof) {
+              isEOF = true;
+              resolve(JSON.parse(result));
+            }
+
+            return this.sendCommand('IO.read', readArguments).then(onChunkRead);
+          };
+
+          this.sendCommand('IO.read', readArguments).then(onChunkRead);
         });
 
         this.sendCommand('Tracing.end');
