@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', _ => {
   });
 
   reloadAndRunAllEl.addEventListener('click', () => {
-    background.runAudits(background.RELOAD_PAGE_AND_RUN_ALL_TESTS).then(ret => {
+    background.runAudits({
+      reloadPageAndRunAllTests: true
+    }).then(ret => {
       resultsEl.innerHTML = ret;
     });
   });

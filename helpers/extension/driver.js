@@ -175,27 +175,27 @@ class ExtensionProtocol extends ChromeProtocol {
   }
 
   gotoURL(url, waitForLoaded, reloadPageAndRunAllTests) {
-    if (reloadPageAndRunAllTests) {
-      return new Promise((resolve, reject) => {
-        Promise.resolve()
-        .then(_ => this.sendCommand('Page.enable'))
-        .then(_ => this.sendCommand('Page.navigate', {url: url}))
-        .then(response => {
-          this.url = url;
-
-          if (!waitForLoaded) {
-            return resolve(response);
-          }
-          this.on('Page.loadEventFired', response => {
-            setTimeout(_ => {
-              resolve(response);
-            }, this.PAUSE_AFTER_LOAD);
-          });
-        });
-      });
+    if (!reloadPageAndRunAllTests) {
+      return Promise.resolve();
     }
 
-    return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      Promise.resolve()
+      .then(_ => this.sendCommand('Page.enable'))
+      .then(_ => this.sendCommand('Page.navigate', {url: url}))
+      .then(response => {
+        this.url = url;
+
+        if (!waitForLoaded) {
+          return resolve(response);
+        }
+        this.on('Page.loadEventFired', response => {
+          setTimeout(_ => {
+            resolve(response);
+          }, this.PAUSE_AFTER_LOAD);
+        });
+      });
+    });
   }
 
   pendingCommandsComplete() {

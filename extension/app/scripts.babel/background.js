@@ -23,7 +23,8 @@ const driver = new ExtensionProtocol();
 
 window.RELOAD_PAGE_AND_RUN_ALL_TESTS = true;
 
-window.runAudits = function(reloadPageAndRunAllTests) {
+window.runAudits = function(options) {
+  const reloadPageAndRunAllTests = options.reloadPageAndRunAllTests;
   return driver.getCurrentTabURL()
       .then(url => runner(driver, {url, reloadPageAndRunAllTests}))
       .then(results => createResultsHTML(results))
