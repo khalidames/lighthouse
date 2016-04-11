@@ -52,6 +52,11 @@ function createResultsHTML(results) {
     const groupClass = 'group ' +
         (groupHasErrors ? 'errors expanded' : 'no-errors collapsed');
 
+    // Skip any tests that didn't run.
+    if (score === '-1') {
+      return;
+    }
+
     let groupHTML = '';
     item.score.subItems.forEach(subitem => {
       const debugString = subitem.debugString ? ` title="${escapeHTML(subitem.debugString)}"` : '';
