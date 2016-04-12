@@ -17,7 +17,6 @@
 'use strict';
 
 const ChromeProtocol = require('../browser/driver.js');
-const emulation = require('../emulation');
 
 /* globals chrome */
 
@@ -157,6 +156,7 @@ class ExtensionProtocol extends ChromeProtocol {
 
   off(eventName, cb) {
     if (typeof this._listeners[eventName] === 'undefined') {
+      console.warn(`Unable to remove listener ${eventName}; no such listener found.`);
       return;
     }
 
@@ -166,26 +166,6 @@ class ExtensionProtocol extends ChromeProtocol {
     }
 
     this._listeners[eventName].splice(callbackIndex, 1);
-  }
-
-  gotoURL(url, waitForLoaded) {
-    return new Promise((resolve, reject) => {
-      Promise.resolve()
-      .then(_ => this.sendCommand('Page.enable'))
-      .then(_ => this.sendCommand('Page.navigate', {url: url}))
-      .then(response => {
-        this.url = url;
-
-        if (!waitForLoaded) {
-          return resolve(response);
-        }
-        this.on('Page.loadEventFired', response => {
-          setTimeout(_ => {
-            resolve(response);
-          }, this.PAUSE_AFTER_LOAD);
-        });
-      });
-    });
   }
 
   pendingCommandsComplete() {

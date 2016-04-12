@@ -45,14 +45,6 @@ if (semver.lt(process.version, '5.0.0')) {
   process.exit(1);
 }
 
-if (typeof cli.flags.mobile === 'undefined') {
-  cli.flags.mobile = true;
-}
-
-if (typeof cli.flags.loadPage === 'undefined') {
-  cli.flags.loadPage = true;
-}
-
 lighthouse({
   url: url,
   flags: cli.flags

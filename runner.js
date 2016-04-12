@@ -44,6 +44,16 @@ const aggregators = [
 ];
 
 module.exports = function(driver, opts) {
+  // Default mobile emulation and page loading to true.
+  // The extension will switch these off initially.
+  if (typeof opts.flags.mobile === 'undefined') {
+    opts.flags.mobile = true;
+  }
+
+  if (typeof opts.flags.loadPage === 'undefined') {
+    opts.flags.loadPage = true;
+  }
+
   return GatherScheduler
       .run(gatherers, Object.assign(opts, {driver}))
       .then(artifacts => Auditor.audit(artifacts, audits))

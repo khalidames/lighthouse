@@ -41,10 +41,11 @@ class GatherScheduler {
 
       // Enable emulation.
       .then(_ => {
-        if (!emulateMobileDevice) {
-          return Promise.resolve();
+        if (emulateMobileDevice) {
+          return driver.beginEmulation();
         }
-        return driver.beginEmulation();
+
+        return Promise.resolve();
       })
 
       // Clean all caches and force updates to any Service Workers.
@@ -64,11 +65,11 @@ class GatherScheduler {
 
       // Load the page (if the CLI / extension want it loaded).
       .then(_ => {
-        if (!loadPage) {
-          return Promise.resolve();
+        if (loadPage) {
+          return driver.gotoURL(url, driver.WAIT_FOR_LOADED);
         }
 
-        return driver.gotoURL(url, driver.WAIT_FOR_LOADED);
+        return Promise.resolve();
       })
 
       // Gather: afterPageLoad phase

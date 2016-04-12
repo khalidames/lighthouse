@@ -143,12 +143,10 @@ class ChromeProtocol {
   }
 
   gotoURL(url, waitForLoaded) {
-    const sendCommand = this.sendCommand.bind(this);
-
     return new Promise((resolve, reject) => {
       Promise.resolve()
-      .then(_ => sendCommand('Page.enable'))
-      .then(_ => sendCommand('Page.navigate', {url: url}))
+      .then(_ => this.sendCommand('Page.enable'))
+      .then(_ => this.sendCommand('Page.navigate', {url: url}))
       .then(response => {
         this.url = url;
 
@@ -196,38 +194,45 @@ class ChromeProtocol {
   }
 
   endTrace() {
-    return this.connect().then(_ => {
-      return new Promise((resolve, reject) => {
-        // When all Tracing.dataCollected events have finished, this event fires
-        this.on('Tracing.tracingComplete', streamHandle => {
-          // With our stream we can read a bunch, and if its taking too long,
-          // take a break to the next event cycle and then go again.
-          let isEOF = false;
-          let result = '';
-
-          const readArguments = {
-            handle: streamHandle.stream
-          };
-          const onChunkRead = response => {
-            if (isEOF) {
-              return;
-            }
-
-            result += response.data;
-
-            if (response.eof) {
-              isEOF = true;
-              resolve(JSON.parse(result));
-            }
-
-            return this.sendCommand('IO.read', readArguments).then(onChunkRead);
-          };
-
-          this.sendCommand('IO.read', readArguments).then(onChunkRead);
-        });
-
-        this.sendCommand('Tracing.end');
+    return new Promise((resolve, reject) => {
+      // When the tracing has ended this will fire with a stream handle.
+      this.on('Tracing.tracingComplete', streamHandle => {
+        this._readTraceFromStream(streamHandle)
+            .then(traceContents => resolve(traceContents));
       });
+
+      // Issue the command to stop tracing.
+      this.connect().then(_ => this.sendCommand('Tracing.end'));
+    });
+  }
+
+  _readTraceFromStream(streamHandle) {
+    return new Promise((resolve, reject) => {
+      // With our stream we can read a bunch, and if its taking too long,
+      // take a break to the next event cycle and then go again.
+      let isEOF = false;
+      let result = '';
+
+      const readArguments = {
+        handle: streamHandle.stream
+      };
+
+      const onChunkRead = response => {
+        if (isEOF) {
+          return;
+        }
+
+        result += response.data;
+
+        if (response.eof) {
+          isEOF = true;
+          resolve(JSON.parse(result));
+        }
+
+        return this.sendCommand('IO.read', readArguments).then(onChunkRead);
+      };
+
+      this.sendCommand('IO.read', readArguments).then(onChunkRead);
     });
   }
 

@@ -20,13 +20,15 @@
 const ExtensionProtocol = require('../../../helpers/extension/driver.js');
 const runner = require('../../../runner');
 const driver = new ExtensionProtocol();
-
-window.RELOAD_PAGE_AND_RUN_ALL_TESTS = true;
+const NO_SCORE_PROVIDED = '-1';
 
 window.runAudits = function(options) {
-  const reloadPageAndRunAllTests = options.reloadPageAndRunAllTests;
   return driver.getCurrentTabURL()
-      .then(url => runner(driver, {url, reloadPageAndRunAllTests}))
+      .then(url => {
+        // Add in the URL to the options.
+        Object.assign(options, {url});
+        return runner(driver, options);
+      })
       .then(results => createResultsHTML(results))
       .catch(returnError);
 };
@@ -54,7 +56,7 @@ function createResultsHTML(results) {
         (groupHasErrors ? 'errors expanded' : 'no-errors collapsed');
 
     // Skip any tests that didn't run.
-    if (score === '-1') {
+    if (score === NO_SCORE_PROVIDED) {
       return;
     }
 

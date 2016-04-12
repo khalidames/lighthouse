@@ -19,15 +19,23 @@ document.addEventListener('DOMContentLoaded', _ => {
   const background = chrome.extension.getBackgroundPage();
   const siteNameEl = window.document.querySelector('header h2');
   const resultsEl = document.body.querySelector('.results');
-  const reloadAndRunAllEl = document.body.querySelector('.reload-all');
+  const reloadPage = document.body.querySelector('.reload-all');
 
-  background.runAudits().then(ret => {
+  background.runAudits({
+    flags: {
+      mobile: false,
+      loadPage: false
+    }
+  }).then(ret => {
     resultsEl.innerHTML = ret;
   });
 
-  reloadAndRunAllEl.addEventListener('click', () => {
+  reloadPage.addEventListener('click', () => {
     background.runAudits({
-      reloadPageAndRunAllTests: true
+      flags: {
+        mobile: true,
+        loadPage: true
+      }
     }).then(ret => {
       resultsEl.innerHTML = ret;
     });
