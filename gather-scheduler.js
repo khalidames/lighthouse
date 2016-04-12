@@ -48,8 +48,11 @@ class GatherScheduler {
         return Promise.resolve();
       })
 
-      // Clean all caches and force updates to any Service Workers.
-      .then(_ => driver.cleanCaches())
+      // Clean all browser caches.
+      .then(_ => driver.cleanAndDisableBrowserCaches())
+
+      // Force SWs to update on load.
+      .then(_ => driver.forceUpdateServiceWorkers())
 
       // Gather: setup phase.
       .then(_ => this._runPhase(gatherers,

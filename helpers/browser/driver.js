@@ -278,19 +278,18 @@ class ChromeProtocol {
     ]);
   }
 
-  cleanCaches() {
+  cleanAndDisableBrowserCaches() {
     return Promise.all([
-      this.clearCache(this),
-      this.disableCache(this),
-      this.forceUpdateServiceWorkers()
+      this.clearBrowserCache(),
+      this.disableBrowserCache()
     ]);
   }
 
-  clearCache() {
+  clearBrowserCache() {
     return this.sendCommand('Network.clearBrowserCache');
   }
 
-  disableCache() {
+  disableBrowserCache() {
     return this.sendCommand('Network.setCacheDisabled', {cacheDisabled: true});
   }
 
