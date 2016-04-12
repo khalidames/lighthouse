@@ -24,8 +24,6 @@ const port = process.env.PORT || 9222;
 
 const log = (typeof process === 'undefined') ? console.log.bind(console) : require('npmlog').log;
 
-const TRACE_RETRIEVAL_TIMEOUT = 15000;
-
 class ChromeProtocol {
 
   get WAIT_FOR_LOADED() {
@@ -277,8 +275,7 @@ class ChromeProtocol {
     return Promise.all([
       emulation.enableNexus5X(this),
       emulation.enableNetworkThrottling(this)
-    ])
-    .then(_ => this.cleanCaches());
+    ]);
   }
 
   cleanCaches() {
