@@ -126,7 +126,7 @@ class ExtensionProtocol extends ChromeProtocol {
       return this.queryCurrentTab_().then(_ => this.url);
     }
 
-    return this.url;
+    return Promise.resolve(this.url);
   }
 
   attachDebugger_(tabId) {
