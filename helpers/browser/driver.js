@@ -155,10 +155,11 @@ class ChromeProtocol {
         // If the URL matches then we need to issue a reload not navigate
         // @see https://github.com/GoogleChrome/lighthouse/issues/183
         const shouldReload = (currentURL === url || currentURL === url + '/');
-        const command = shouldReload ? 'Page.reload' : 'Page.navigate';
-        const options = shouldReload ? {ignoreCache: true} : {url};
+        if (shouldReload) {
+          return this.sendCommand('Page.reload', {ignoreCache: true});
+        }
 
-        return this.sendCommand(command, options);
+        return this.sendCommand('Page.navigate', {url});
       })
       .then(response => {
         this.url = url;
