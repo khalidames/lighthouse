@@ -110,6 +110,10 @@ global.WebInspector.NetworkManager.createWithFakeTarget = function() {
     registerNetworkDispatcher() {}
   };
 
+  global.WebInspector.moduleSetting = function(settingName) {
+    return this._moduleSettings[settingName];
+  };
+
   return new global.WebInspector.NetworkManager(fakeTarget);
 };
 
