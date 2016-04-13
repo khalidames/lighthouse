@@ -10,7 +10,7 @@ if ! grep -q "URL responds with a 200 when offline: false" results; then
   exit 1
 fi
 
-sleep 1s
+sleep 5s
 
 ./cli.js https://www.moji-brush.com > results
 
