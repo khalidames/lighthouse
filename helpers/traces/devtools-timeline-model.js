@@ -19,6 +19,7 @@
 
 /* global WebInspector, TimelineModelTreeView */
 
+
 // minor configurations
 require('devtools-timeline-model/lib/devtools-monkeypatches.js');
 // polyfill the bottom-up and topdown tree sorting
