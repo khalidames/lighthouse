@@ -24,7 +24,9 @@
 // Global pollution.
 global.self = global;
 global.WebInspector = {};
-global.window = global;
+if (typeof global.window === 'undefined') {
+  global.window = global.self = global;
+}
 
 // Initialize WebInspector.NetworkManager.
 global.Runtime = {};
