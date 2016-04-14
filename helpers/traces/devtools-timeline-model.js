@@ -19,56 +19,12 @@
 
 /* global WebInspector, TimelineModelTreeView */
 
-console.log('Booting dtm');
-
-// establish our sandboxed globals
-if (typeof global.window === 'undefined') {
-  global.window = global.self = global;
-}
-
-// global.WebInspector = global.WebInspector || {};
-global.Runtime = global.Runtime || {};
-// global.TimelineModelTreeView = global.TimelineModelTreeView || {};
-global.TreeElement = global.TreeElement || {};
-global.WorkerRuntime = global.WorkerRuntime || {};
-// global.Protocol = global.Protocol || {};
-global.insertionIndexForObjectInListSortedByFunction =
-    function(object, list, comparator, insertionIndexAfter) {
-      if (insertionIndexAfter) {
-        return list.upperBound(object, comparator);
-      }
-
-      return list.lowerBound(object, comparator);
-    };
-
-// polyfills
-require('devtools-timeline-model/lib/api-stubs.js');
-
-// chrome devtools frontend
-// require('chrome-devtools-frontend/front_end/common/Object.js');
-require('chrome-devtools-frontend/front_end/common/SegmentedRange.js');
-// require('chrome-devtools-frontend/front_end/platform/utilities.js');
-// require('chrome-devtools-frontend/front_end/sdk/Target.js');
-require('chrome-devtools-frontend/front_end/bindings/TempFile.js');
-require('chrome-devtools-frontend/front_end/sdk/TracingModel.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineJSProfile.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineUIUtils.js');
-require('chrome-devtools-frontend/front_end/sdk/CPUProfileDataModel.js');
-require('chrome-devtools-frontend/front_end/timeline/LayerTreeModel.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineModel.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineTreeView.js');
-require('chrome-devtools-frontend/front_end/ui_lazy/SortableDataGrid.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineProfileTree.js');
-require('chrome-devtools-frontend/front_end/components_lazy/FilmStripModel.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineIRModel.js');
-require('chrome-devtools-frontend/front_end/timeline/TimelineFrameModel.js');
-
 // minor configurations
 require('devtools-timeline-model/lib/devtools-monkeypatches.js');
 // polyfill the bottom-up and topdown tree sorting
 require('devtools-timeline-model/lib/timeline-model-treeview.js');
 
-class SandboxedModel {
+class TimelineModel {
 
   constructor(events) {
     this.WI = WebInspector;
@@ -161,4 +117,4 @@ class SandboxedModel {
 
 }
 
-module.exports = SandboxedModel;
+module.exports = TimelineModel;
