@@ -26,6 +26,7 @@ function Report() {
 
   this.menu = document.querySelector('.js-menu');
   this.menuContainer = document.querySelector('.js-menu-container');
+  this.printButton = document.querySelector('.js-print');
   this.menuBCR = this.menuContainer.getBoundingClientRect();
   this.menuTopPosition = this.menuBCR.top + window.scrollY - MENU_PADDING_TOP;
   this.onScroll = this.onScroll.bind(this);
@@ -64,9 +65,14 @@ Report.prototype = {
     this.handleMenuStickiness({forceUpdate: true});
   },
 
+  onPrint: function() {
+    window.print();
+  },
+
   addEventListeners: function() {
     window.addEventListener('scroll', this.onScroll);
     window.addEventListener('resize', this.onResize);
+    this.printButton.addEventListener('click', this.onPrint);
   }
 };
 

@@ -111,6 +111,10 @@ a {
   opacity: 0.65;
   font-size: 18px;
   font-weight: 400;
+  overflow: hidden;
+  width: 74%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .header__score {
@@ -344,4 +348,19 @@ a {
   font-size: 12px;
   border-top: 1px solid #EBEBEB;
   color: #999;
+}
+
+@media print {
+  .report {
+    box-shadow: none;
+  }
+
+  .header * {
+    color: #333;
+  }
+
+  .report-body__header,
+  .report-body__menu-container {
+    display: none;
+  }
 }
