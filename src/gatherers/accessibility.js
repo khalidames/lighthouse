@@ -16,7 +16,7 @@
  */
 'use strict';
 
-/* global document, window */
+/* global document, __inspect */
 
 const Gather = require('./gather');
 const fs = require('fs');
@@ -27,7 +27,7 @@ const axe = fs.readFileSync(
 function runA11yChecks() {
   axe.a11yCheck(document, function(results) {
     // __inspect is magically inserted by driver.evaluateAsync
-    window.__inspect(JSON.stringify(results));
+    __inspect(JSON.stringify(results));
   });
 }
 

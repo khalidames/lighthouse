@@ -19,12 +19,12 @@
 const Gather = require('./gather');
 const manifestParser = require('../lib/manifest-parser');
 
-/* global document, XMLHttpRequest, window */
+/* global document, XMLHttpRequest, __inspect */
 
 function getManifestContent() {
   function post(response) {
     // __inspect is magically inserted by driver.evaluateAsync
-    window.__inspect(JSON.stringify(response));
+    __inspect(JSON.stringify(response));
   }
 
   const manifestNode = document.querySelector('link[rel=manifest]');

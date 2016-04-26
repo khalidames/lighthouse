@@ -93,14 +93,9 @@ class DriverBase {
   evaluateAsync(asyncExpression) {
     return new Promise((resolve, reject) => {
       // Inject the call to capture inspection.
-      const expression = `window.__inspect = inspect;${asyncExpression}`;
+      const expression = `(function() {var __inspect = inspect;${asyncExpression}})()`;
 
-      this.on('Runtime.inspectRequested', value => {
-        // Tidy up the injected call.
-        this.sendCommand('Runtime.evaluate', {
-          expression: 'delete window.__inspect'
-        }).then(_ => resolve(value));
-      });
+      this.on('Runtime.inspectRequested', value => resolve(value));
 
       this.sendCommand('Runtime.evaluate', {
         expression,
