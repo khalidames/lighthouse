@@ -107,6 +107,9 @@ class DriverBase {
         includeCommandLineAPI: true,
         returnByValue: false
       });
+
+      // If this gets to 15s and it hasn't been resolved, reject the Promise.
+      setTimeout(reject, 15000);
     });
   }
 
