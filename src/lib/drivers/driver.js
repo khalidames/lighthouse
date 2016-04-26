@@ -92,13 +92,15 @@ class DriverBase {
 
   evaluateAsync(asyncExpression) {
     return new Promise((resolve, reject) => {
-      let asyncTimeout = 0;
+      let asyncTimeout;
 
       // Inject the call to capture inspection.
       const expression = `(function() {var __inspect = inspect;${asyncExpression}})()`;
 
       this.on('Runtime.inspectRequested', value => {
-        clearTimeout(asyncTimeout);
+        if (asyncTimeout !== undefined) {
+          clearTimeout(asyncTimeout);
+        }
         return resolve(value);
       });
 
