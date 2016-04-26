@@ -105,9 +105,7 @@ class DriverBase {
       this.sendCommand('Runtime.evaluate', {
         expression,
         includeCommandLineAPI: true,
-        generatePreview: false,
-        returnByValue: false,
-        userGesture: true
+        returnByValue: false
       });
     });
   }
