@@ -92,10 +92,15 @@ class DriverBase {
 
   evaluateAsync(asyncExpression) {
     return new Promise((resolve, reject) => {
+      let asyncTimeout = 0;
+
       // Inject the call to capture inspection.
       const expression = `(function() {var __inspect = inspect;${asyncExpression}})()`;
 
-      this.on('Runtime.inspectRequested', value => resolve(value));
+      this.on('Runtime.inspectRequested', value => {
+        clearTimeout(asyncTimeout);
+        return resolve(value);
+      });
 
       this.sendCommand('Runtime.evaluate', {
         expression,
@@ -104,7 +109,7 @@ class DriverBase {
       });
 
       // If this gets to 15s and it hasn't been resolved, reject the Promise.
-      setTimeout(reject, 15000);
+      asyncTimeout = setTimeout(reject, 15000);
     });
   }
 
