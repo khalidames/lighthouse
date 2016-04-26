@@ -26,8 +26,8 @@ const axe = fs.readFileSync(
 
 function runA11yChecks() {
   axe.a11yCheck(document, function(results) {
-    // Magically inserted by driver.evaluateAsync
-    window.__inspect(results);
+    // __inspect is magically inserted by driver.evaluateAsync
+    window.__inspect(JSON.stringify(results));
   });
 }
 
@@ -49,17 +49,14 @@ class Accessibility extends Gather {
     return driver.evaluateAsync(`${axe};(${runA11yChecks.toString()}())`)
 
     .then(returnedData => {
-      if (returnedData.result.value === undefined ||
-          returnedData.result.value === null ||
-          returnedData.result.value === {}) {
-       // The returned object from Runtime.evaluate is an enigma
-       // Sometimes if the returned object is not easily serializable,
-       // it sets value = {}
-        throw new Error('Accessibility gather error: ' +
-          'Failed to get proper result from runtime eval');
+      if (typeof returnedData === 'undefined' ||
+          typeof returnedData.object === 'undefined' ||
+          typeof returnedData.object.value === 'undefined') {
+        this.artifact = Accessibility._errorAccessibility('Unable to parse axe results');
+        return;
       }
 
-      const returnedValue = returnedData.result.value;
+      const returnedValue = JSON.parse(returnedData.object.value);
 
       if (returnedValue.error) {
         this.artifact = Accessibility._errorAccessibility(returnedValue.error);
