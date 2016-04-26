@@ -53,6 +53,10 @@ class DriverBase {
     this._url = _url;
   }
 
+  enableRuntimeEvents() {
+    return this.sendCommand('Runtime.enable');
+  }
+
   /**
    * @return {!Promise<null>}
    */
