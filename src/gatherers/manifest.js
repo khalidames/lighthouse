@@ -19,30 +19,37 @@
 const Gather = require('./gather');
 const manifestParser = require('../lib/manifest-parser');
 
-/* global document, XMLHttpRequest */
+/* global document, XMLHttpRequest, window */
 
 function getManifestContent() {
+  function post(response) {
+    // __inspect is magically inserted by driver.evaluateAsync
+    window.__inspect(JSON.stringify(response));
+  }
+
   const manifestNode = document.querySelector('link[rel=manifest]');
   if (!manifestNode) {
-    return {error: 'No <link rel="manifest"> found in DOM.'};
+    return post({error: 'No <link rel="manifest"> found in DOM.'});
   }
 
   const manifestURL = manifestNode.href;
   if (!manifestURL) {
-    return {error: 'No href found on <link rel="manifest">.'};
+    return post({error: 'No href found on <link rel="manifest">.'});
   }
 
   const req = new XMLHttpRequest();
-  req.open('GET', manifestURL, false);
-  req.send();
-  if (req.status >= 400) {
-    return {
-      error: `Unable to fetch manifest at \
-        ${manifestURL}: ${req.status} - ${req.statusText}`
-    };
-  }
+  req.open('GET', manifestURL);
+  req.onload = function() {
+    if (req.status !== 200) {
+      return post({
+        error: `Unable to fetch manifest at \
+          ${manifestURL}: ${req.status} - ${req.statusText}`
+      });
+    }
 
-  return {manifestContent: req.response};
+    post({manifestContent: req.response});
+  };
+  req.send();
 }
 
 class Manifest extends Gather {
@@ -64,21 +71,17 @@ class Manifest extends Gather {
      * potentially lead to a different asset. Using the original manifest
      * resource is tracked in issue #83
      */
-    return driver.sendCommand('Runtime.evaluate', {
-      expression: `(${getManifestContent.toString()}())`,
-      returnByValue: true
-    }).then(returnedData => {
-      if (returnedData.result.value === undefined ||
-          returnedData.result.value === null ||
-          returnedData.result.value === {}) {
-       // The returned object from Runtime.evaluate is an enigma
-       // Sometimes if the returned object is not easily serializable,
-       // it sets value = {}
-        throw new Error('Manifest gather error: ' +
-          'Failed to get proper result from runtime eval');
+    return driver.evaluateAsync(`(${getManifestContent.toString()}())`)
+
+    .then(returnedData => {
+      if (typeof returnedData === 'undefined' ||
+          typeof returnedData.object === 'undefined' ||
+          typeof returnedData.object.value === 'undefined') {
+        this.artifact = Manifest._errorManifest('Unable to retrieve manifest');
+        return;
       }
 
-      const returnedValue = returnedData.result.value;
+      const returnedValue = JSON.parse(returnedData.object.value);
 
       if (returnedValue.error) {
         this.artifact = Manifest._errorManifest(returnedValue.error);
