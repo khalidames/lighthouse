@@ -43,6 +43,8 @@ class DriverBase {
       'java',
       'v8'
     ];
+
+    this._asyncTimeout = undefined;
   }
 
   get url() {
@@ -92,26 +94,37 @@ class DriverBase {
 
   evaluateAsync(asyncExpression) {
     return new Promise((resolve, reject) => {
-      let asyncTimeout;
-
       // Inject the call to capture inspection.
-      const expression = `(function() {var __inspect = inspect;${asyncExpression}})()`;
+      const expression = `(function() {
+        const __inspect = inspect;
+        const __returnResults = function(results) {
+          __inspect(JSON.stringify(results));
+        };
+        ${asyncExpression}
+      })()`;
 
       this.on('Runtime.inspectRequested', value => {
-        if (asyncTimeout !== undefined) {
-          clearTimeout(asyncTimeout);
+        if (this._asyncTimeout !== undefined) {
+          clearTimeout(this._asyncTimeout);
         }
-        return resolve(value);
+
+        // If the returned object doesn't meet the expected pattern bail with an undefined.
+        if (typeof value === 'undefined' ||
+            typeof value.object === 'undefined' ||
+            typeof value.object.value === 'undefined') {
+          return resolve(undefined);
+        }
+
+        return resolve(JSON.parse(value.object.value));
       });
 
       this.sendCommand('Runtime.evaluate', {
         expression,
-        includeCommandLineAPI: true,
-        returnByValue: false
+        includeCommandLineAPI: true
       });
 
       // If this gets to 15s and it hasn't been resolved, reject the Promise.
-      asyncTimeout = setTimeout(reject, 15000);
+      this._asyncTimeout = setTimeout(reject, 15000);
     });
   }
 

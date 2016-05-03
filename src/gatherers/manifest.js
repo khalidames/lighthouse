@@ -19,12 +19,12 @@
 const Gather = require('./gather');
 const manifestParser = require('../lib/manifest-parser');
 
-/* global document, XMLHttpRequest, __inspect */
+/* global document, XMLHttpRequest, __returnResults */
 
 function getManifestContent() {
   function post(response) {
-    // __inspect is magically inserted by driver.evaluateAsync
-    __inspect(JSON.stringify(response));
+    // __returnResults is magically inserted by driver.evaluateAsync
+    __returnResults(response);
   }
 
   const manifestNode = document.querySelector('link[rel=manifest]');
@@ -73,15 +73,11 @@ class Manifest extends Gather {
      */
     return driver.evaluateAsync(`(${getManifestContent.toString()}())`)
 
-    .then(returnedData => {
-      if (typeof returnedData === 'undefined' ||
-          typeof returnedData.object === 'undefined' ||
-          typeof returnedData.object.value === 'undefined') {
+    .then(returnedValue => {
+      if (!returnedValue) {
         this.artifact = Manifest._errorManifest('Unable to retrieve manifest');
         return;
       }
-
-      const returnedValue = JSON.parse(returnedData.object.value);
 
       if (returnedValue.error) {
         this.artifact = Manifest._errorManifest(returnedValue.error);

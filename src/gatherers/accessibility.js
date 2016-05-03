@@ -16,7 +16,7 @@
  */
 'use strict';
 
-/* global document, __inspect */
+/* global document, __returnResults */
 
 const Gather = require('./gather');
 const fs = require('fs');
@@ -26,8 +26,8 @@ const axe = fs.readFileSync(
 
 function runA11yChecks() {
   axe.a11yCheck(document, function(results) {
-    // __inspect is magically inserted by driver.evaluateAsync
-    __inspect(JSON.stringify(results));
+    // __returnResults is magically inserted by driver.evaluateAsync
+    __returnResults(results);
   });
 }
 
@@ -46,26 +46,23 @@ class Accessibility extends Gather {
   postProfiling(options) {
     const driver = options.driver;
 
-    return driver.evaluateAsync(`${axe};(${runA11yChecks.toString()}())`)
+    return driver
+        .evaluateAsync(`${axe};(${runA11yChecks.toString()}())`)
+        .then(returnedValue => {
+          console.log(typeof returnedValue);
+          if (!returnedValue) {
+            this.artifact = Accessibility._errorAccessibility('Unable to parse axe results');
+            return;
+          }
 
-    .then(returnedData => {
-      if (typeof returnedData === 'undefined' ||
-          typeof returnedData.object === 'undefined' ||
-          typeof returnedData.object.value === 'undefined') {
-        this.artifact = Accessibility._errorAccessibility('Unable to parse axe results');
-        return;
-      }
-
-      const returnedValue = JSON.parse(returnedData.object.value);
-
-      if (returnedValue.error) {
-        this.artifact = Accessibility._errorAccessibility(returnedValue.error);
-      } else {
-        this.artifact = {
-          accessibility: returnedValue
-        };
-      }
-    });
+          if (returnedValue.error) {
+            this.artifact = Accessibility._errorAccessibility(returnedValue.error);
+          } else {
+            this.artifact = {
+              accessibility: returnedValue
+            };
+          }
+        });
   }
 }
 
