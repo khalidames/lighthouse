@@ -49,7 +49,6 @@ class Accessibility extends Gather {
     return driver
         .evaluateAsync(`${axe};(${runA11yChecks.toString()}())`)
         .then(returnedValue => {
-          console.log(typeof returnedValue);
           if (!returnedValue) {
             this.artifact = Accessibility._errorAccessibility('Unable to parse axe results');
             return;
