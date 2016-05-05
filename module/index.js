@@ -42,13 +42,5 @@ module.exports = function(url, flags) {
   }
 
   // kick off a lighthouse run
-  return lighthouse(driver, {url, flags})
-    .catch(err => {
-      if (err.code === 'ECONNREFUSED') {
-        console.error('Unable to connect to Chrome. Did you run ./launch-chrome.sh?');
-      } else {
-        console.error('Runtime error encountered:', err);
-        console.error(err.stack);
-      }
-    });
+  return lighthouse(driver, {url, flags});
 };
