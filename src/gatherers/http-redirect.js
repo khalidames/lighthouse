@@ -23,62 +23,28 @@ class HTTPRedirect extends Gather {
   static _error(errorString) {
     return {
       redirectsHTTP: {
-        raw: undefined,
         value: undefined,
         debugString: errorString
       }
     };
   }
 
-  afterReloadPageLoad(options) {
+  constructor() {
+    super();
+    this._resolved = false;
+    this._artifactsResolved = undefined;
+    this._onSecurityStateChanged = undefined;
+    this._noSecurityChangesTimeout = undefined;
+  }
+
+  afterSecondReloadPageLoad(options) {
     const driver = options.driver;
-    const url = options.url;
-    const httpURL = options.url.replace(/^https/, 'http');
-
-    // If the URL hasn't changed then the origin URL was HTTP.
-    if (httpURL === url) {
-      this.artifact = {
-        redirectsHTTP: {
-          value: false
-        }
-      };
-
-      return Promise.resolve();
-    }
 
     return new Promise((resolve, reject) => {
-      let securityStateChangedTimeout;
-      let noSecurityChangesTimeout;
-
-      driver.on('Security.securityStateChanged', data => {
-        // Clear out any previous results.
-        if (securityStateChangedTimeout !== undefined) {
-          clearTimeout(securityStateChangedTimeout);
-        }
-
-        if (noSecurityChangesTimeout !== undefined) {
-          clearTimeout(noSecurityChangesTimeout);
-        }
-
-        // Wait up to 3 seconds for updated security events.
-        securityStateChangedTimeout = setTimeout(_ => {
-          this.artifact = {
-            redirectsHTTP: {
-              value: data.schemeIsCryptographic
-            }
-          };
-          resolve();
-        }, 3000);
-      });
-
-      // Redirect out to about:blank first, because HTTP -> HTTPS causes a hang, similar to the way
-      // that Page.navigate vs Page.reload does. So we basically force the issue by going to
-      // about:blank first. That way there's no confusion.
-      driver.gotoURL('about:blank', {waitForLoad: false})
-          .then(_ => driver.gotoURL(httpURL, {waitForLoad: true}));
-
-      // Wait for 10 seconds then bail.
-      noSecurityChangesTimeout = setTimeout(_ => {
+      // Set up a timeout for ten seconds in case we don't get any
+      // security events at all. If that happens, bail.
+      this._noSecurityChangesTimeout = setTimeout(_ => {
+        this._resolved = true;
         this.artifact = {
           redirectsHTTP: {
             value: false,
@@ -88,6 +54,23 @@ class HTTPRedirect extends Gather {
 
         resolve();
       }, 10000);
+
+      driver.getSecurityState()
+        .then(state => {
+          // We've received a security event, so this needs
+          // to be canceled, otherwise we resolve the promise with an error.
+          if (this._noSecurityChangesTimeout !== undefined) {
+            clearTimeout(this._noSecurityChangesTimeout);
+          }
+
+          this.artifact = {
+            redirectsHTTP: {
+              value: state.schemeIsCryptographic
+            }
+          };
+
+          resolve();
+        });
     });
   }
 }
