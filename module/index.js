@@ -18,9 +18,9 @@
 'use strict';
 
 const semver = require('semver');
-const log = require('./lib/log.js');
-const ChromeProtocol = require('./lib/drivers/cri.js');
-const lighthouse = require('./lighthouse');
+const log = require('../src/lib/log.js');
+const ChromeProtocol = require('../src/lib/drivers/cri.js');
+const lighthouse = require('../src/lighthouse');
 
 // node 5.x required due to use of ES2015 features
 if (semver.lt(process.version, '5.0.0')) {
@@ -37,8 +37,8 @@ module.exports = function(url, flags) {
 
   // set logging preferences, assume quiet
   log.level = 'error';
-  if (flags.verbose) {
-    log.level = 'verbose';
+  if (flags.logLevel) {
+    log.level = flags.logLevel;
   }
 
   // kick off a lighthouse run
