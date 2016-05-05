@@ -45,9 +45,10 @@ class RedirectsHTTP extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    return RedirectsHTTP.generateAuditResult(artifacts.redirectsHTTP.value,
-        undefined,
-        artifacts.redirectsHTTP.debugString);
+    return RedirectsHTTP.generateAuditResult({
+      value: artifacts.redirectsHTTP.value,
+      debugString: artifacts.redirectsHTTP.debugString
+    });
   }
 }
 
