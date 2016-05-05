@@ -20,20 +20,8 @@ const Gather = require('./gather');
 
 class HTTPRedirect extends Gather {
 
-  static _error(errorString) {
-    return {
-      redirectsHTTP: {
-        value: undefined,
-        debugString: errorString
-      }
-    };
-  }
-
   constructor() {
     super();
-    this._resolved = false;
-    this._artifactsResolved = undefined;
-    this._onSecurityStateChanged = undefined;
     this._noSecurityChangesTimeout = undefined;
   }
 
@@ -44,7 +32,6 @@ class HTTPRedirect extends Gather {
       // Set up a timeout for ten seconds in case we don't get any
       // security events at all. If that happens, bail.
       this._noSecurityChangesTimeout = setTimeout(_ => {
-        this._resolved = true;
         this.artifact = {
           redirectsHTTP: {
             value: false,
