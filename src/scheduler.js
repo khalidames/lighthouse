@@ -90,12 +90,6 @@ function phaseRunner(gatherers) {
   };
 }
 
-function flattenArtifacts(artifacts) {
-  return artifacts.reduce(function(prev, curr) {
-    return Object.assign(prev, curr);
-  }, {});
-}
-
 function saveArtifacts(artifacts) {
   const artifactsFilename = 'artifacts.log';
   fs.writeFileSync(artifactsFilename, JSON.stringify(artifacts));
@@ -114,6 +108,7 @@ function saveAssets(tracingData, url) {
 function run(gatherers, options) {
   const driver = options.driver;
   const tracingData = {};
+  options.artifacts = {};
 
   if (options.url === undefined || options.url === null) {
     throw new Error('You must provide a url to scheduler');
@@ -144,20 +139,16 @@ function run(gatherers, options) {
     .then(_ => driver.disconnect())
     .then(_ => runPhase(gatherer => gatherer.tearDown(options)))
     .then(_ => {
-      // Collate all the gatherer results.
-      const unflattenedArtifacts = gatherers.map(g => g.artifact).concat(
-          {networkRecords: tracingData.networkRecords},
-          {rawNetworkEvents: tracingData.rawNetworkEvents},
-          {traceContents: tracingData.traceContents},
-          {frameLoadEvents: tracingData.frameLoadEvents});
-
-      const artifacts = flattenArtifacts(unflattenedArtifacts);
+      options.artifacts.networkRecords = tracingData.networkRecords;
+      options.artifacts.rawNetworkEvents = tracingData.rawNetworkEvents;
+      options.artifacts.traceContents = tracingData.traceContents;
+      options.artifacts.frameLoadEvents = tracingData.frameLoadEvents;
 
       if (options.flags.saveArtifacts) {
-        saveArtifacts(artifacts);
+        saveArtifacts(options.artifacts);
       }
 
-      return artifacts;
+      return options.artifacts;
     });
 }
 

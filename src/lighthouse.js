@@ -28,6 +28,7 @@ const gathererClasses = [
   require('./gatherers/theme-color'),
   require('./gatherers/html'),
   require('./gatherers/manifest'),
+  require('./gatherers/start-url'),
   require('./gatherers/accessibility'),
   require('./gatherers/offline')
 ];
@@ -36,6 +37,7 @@ const audits = [
   require('./audits/security/is-on-https'),
   require('./audits/offline/service-worker'),
   require('./audits/offline/works-offline'),
+  require('./audits/offline/start-url-works-offline'),
   require('./audits/mobile-friendly/viewport'),
   require('./audits/mobile-friendly/display'),
   require('./audits/performance/first-meaningful-paint'),
