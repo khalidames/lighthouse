@@ -142,8 +142,8 @@ class CriDriver extends Driver {
    */
   logUniqueCommands() {
     this._commands
-        .sort((a, b) => a - b)
-        .forEach(command => _log('info', 'command', command));
+        .sort()
+        .forEach(command => _log('info', 'command', {method: '', params: command}));
   }
 
   /**
