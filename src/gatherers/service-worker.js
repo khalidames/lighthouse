@@ -23,7 +23,7 @@ class ServiceWorker extends Gather {
     return 'serviceWorkers';
   }
 
-  reloadSetup(options) {
+  setup(options) {
     const driver = options.driver;
     this.resolved = false;
 
@@ -53,7 +53,7 @@ class ServiceWorker extends Gather {
     return versions.find(v => v.status === 'activated' && v.scriptURL.startsWith(origin));
   }
 
-  beforeReloadPageLoad(options) {
+  beforePass(options) {
     const driver = options.driver;
     return driver
       .sendCommand('ServiceWorker.enable')
