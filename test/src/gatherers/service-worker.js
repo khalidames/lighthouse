@@ -35,7 +35,7 @@ describe('Service Worker gatherer', () => {
       scriptURL: url
     }];
 
-    serviceWorkerGatherer.reloadSetup({
+    serviceWorkerGatherer.setup({
       driver: {
         on(evtName, cb) {
           callback = cb;
@@ -44,7 +44,7 @@ describe('Service Worker gatherer', () => {
       url
     });
 
-    return serviceWorkerGatherer.beforeReloadPageLoad({
+    return serviceWorkerGatherer.beforePass({
       driver: {
         sendCommand() {
           callback({
@@ -71,7 +71,7 @@ describe('Service Worker gatherer', () => {
       scriptURL: 'https://other-example.com'
     }];
 
-    serviceWorkerGatherer.reloadSetup({
+    serviceWorkerGatherer.setup({
       driver: {
         on(evtName, cb) {
           callback = cb;
@@ -80,7 +80,7 @@ describe('Service Worker gatherer', () => {
       url
     });
 
-    return serviceWorkerGatherer.beforeReloadPageLoad({
+    return serviceWorkerGatherer.beforePass({
       driver: {
         sendCommand() {
           callback({
@@ -96,7 +96,7 @@ describe('Service Worker gatherer', () => {
   });
 
   it('handles driver failure', () => {
-    return serviceWorkerGatherer.beforeReloadPageLoad({
+    return serviceWorkerGatherer.beforePass({
       driver: {
         sendCommand() {
           return Promise.reject('fail');
