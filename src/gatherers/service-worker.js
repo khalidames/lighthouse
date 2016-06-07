@@ -19,9 +19,6 @@
 const Gather = require('./gather');
 
 class ServiceWorker extends Gather {
-  get name() {
-    return 'serviceWorkers';
-  }
 
   setup(options) {
     const driver = options.driver;
