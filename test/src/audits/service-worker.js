@@ -27,7 +27,7 @@ describe('Offline: Service Worker audit', () => {
 
   it('creates an output when given an empty array', () => {
     const output = Audit.audit({
-      serviceWorkers: {
+      ServiceWorker: {
         versions: []
       }
     });
@@ -37,7 +37,7 @@ describe('Offline: Service Worker audit', () => {
 
   it('copes when given a value of -1', () => {
     const output = Audit.audit({
-      serviceWorkers: {
+      ServiceWorker: {
         versions: -1
       }
     });
@@ -47,7 +47,7 @@ describe('Offline: Service Worker audit', () => {
 
   it('creates an output when given an array of versions', () => {
     const output = Audit.audit({
-      serviceWorkers: {
+      ServiceWorker: {
         versions: [{}]
       }
     });
