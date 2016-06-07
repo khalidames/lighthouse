@@ -17,19 +17,28 @@
 
 'use strict';
 
-const Audit = require('../audit');
+const Audit = require('./audit');
 
-class ManifestStartUrl extends Audit {
+class ManifestDisplay extends Audit {
   /**
    * @return {!AuditMeta}
    */
   static get meta() {
     return {
       category: 'Manifest',
-      name: 'manifest-start-url',
-      description: 'Manifest contains start_url',
+      name: 'manifest-display',
+      description: 'Manifest\'s display property set to standalone/fullscreen to ' +
+            'allow launching without address bar',
       requiredArtifacts: ['manifest']
     };
+  }
+
+  /**
+   * @param {string|null} val
+   * @return {boolean}
+   */
+  static hasRecommendedValue(val) {
+    return (val === 'fullscreen' || val === 'standalone');
   }
 
   /**
@@ -37,17 +46,17 @@ class ManifestStartUrl extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    let hasStartUrl = false;
     const manifest = artifacts.manifest.value;
+    const displayValue = (!manifest || !manifest.display) ? undefined : manifest.display.value;
 
-    if (manifest && manifest.start_url) {
-      hasStartUrl = (!!manifest.start_url.value);
-    }
+    const hasRecommendedValue = ManifestDisplay.hasRecommendedValue(displayValue);
 
-    return ManifestStartUrl.generateAuditResult({
-      value: hasStartUrl
+    return ManifestDisplay.generateAuditResult({
+      value: hasRecommendedValue,
+      rawValue: displayValue,
+      debugString: 'Manifest display property should be standalone or fullscreen.'
     });
   }
 }
 
-module.exports = ManifestStartUrl;
+module.exports = ManifestDisplay;

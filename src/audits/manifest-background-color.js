@@ -17,28 +17,29 @@
 
 'use strict';
 
-const Audit = require('../audit');
+const Audit = require('./audit');
 
-class ManifestDisplay extends Audit {
+class ManifestBackgroundColor extends Audit {
   /**
    * @return {!AuditMeta}
    */
   static get meta() {
     return {
       category: 'Manifest',
-      name: 'manifest-display',
-      description: 'Manifest\'s display property set to standalone/fullscreen to ' +
-            'allow launching without address bar',
+      name: 'manifest-background-color',
+      description: 'Manifest contains background_color',
       requiredArtifacts: ['manifest']
     };
   }
 
   /**
-   * @param {string|null} val
+   * @param {!Manifest=} manifest
    * @return {boolean}
    */
-  static hasRecommendedValue(val) {
-    return (val === 'fullscreen' || val === 'standalone');
+  static hasBackgroundColorValue(manifest) {
+    return manifest !== undefined &&
+      manifest.background_color !== undefined &&
+      manifest.background_color.value !== undefined;
   }
 
   /**
@@ -46,17 +47,13 @@ class ManifestDisplay extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    const manifest = artifacts.manifest.value;
-    const displayValue = (!manifest || !manifest.display) ? undefined : manifest.display.value;
+    const hasBackgroundColor = ManifestBackgroundColor
+        .hasBackgroundColorValue(artifacts.manifest.value);
 
-    const hasRecommendedValue = ManifestDisplay.hasRecommendedValue(displayValue);
-
-    return ManifestDisplay.generateAuditResult({
-      value: hasRecommendedValue,
-      rawValue: displayValue,
-      debugString: 'Manifest display property should be standalone or fullscreen.'
+    return ManifestBackgroundColor.generateAuditResult({
+      value: hasBackgroundColor
     });
   }
 }
 
-module.exports = ManifestDisplay;
+module.exports = ManifestBackgroundColor;

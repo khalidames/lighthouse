@@ -17,17 +17,18 @@
 
 'use strict';
 
-const Audit = require('../audit');
+const Audit = require('./audit');
+const icons = require('../lib/icons');
 
-class ManifestName extends Audit {
+class ManifestIconsMin144 extends Audit {
   /**
    * @return {!AuditMeta}
    */
   static get meta() {
     return {
       category: 'Manifest',
-      name: 'manifest-name',
-      description: 'Manifest contains name',
+      name: 'manifest-icons-min-144',
+      description: 'Manifest contains icons at least 144px',
       requiredArtifacts: ['manifest']
     };
   }
@@ -37,17 +38,24 @@ class ManifestName extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
-    let hasName = false;
     const manifest = artifacts.manifest.value;
 
-    if (manifest && manifest.name) {
-      hasName = (!!manifest.name.value);
+    if (icons.doExist(manifest) === false) {
+      return ManifestIconsMin144.generateAuditResult({
+        value: false,
+        debugString: 'WARNING: No icons found in the manifest'
+      });
     }
 
-    return ManifestName.generateAuditResult({
-      value: hasName
+    const matchingIcons = icons.sizeAtLeast(144, /** @type {!Manifest} */ (manifest));
+    const foundSizesDebug = matchingIcons.length ?
+        `Found icons of sizes: ${matchingIcons}` : undefined;
+    return ManifestIconsMin144.generateAuditResult({
+      value: !!matchingIcons.length,
+      debugString: foundSizesDebug
     });
   }
 }
 
-module.exports = ManifestName;
+module.exports = ManifestIconsMin144;
+

@@ -17,18 +17,17 @@
 
 'use strict';
 
-const Audit = require('../audit');
-const icons = require('../../lib/icons');
+const Audit = require('./audit');
 
-class ManifestIconsMin144 extends Audit {
+class ManifestThemeColor extends Audit {
   /**
    * @return {!AuditMeta}
    */
   static get meta() {
     return {
       category: 'Manifest',
-      name: 'manifest-icons-min-144',
-      description: 'Manifest contains icons at least 144px',
+      name: 'manifest-theme-color',
+      description: 'Manifest contains theme_color',
       requiredArtifacts: ['manifest']
     };
   }
@@ -38,24 +37,17 @@ class ManifestIconsMin144 extends Audit {
    * @return {!AuditResult}
    */
   static audit(artifacts) {
+    let hasThemeColor = false;
     const manifest = artifacts.manifest.value;
 
-    if (icons.doExist(manifest) === false) {
-      return ManifestIconsMin144.generateAuditResult({
-        value: false,
-        debugString: 'WARNING: No icons found in the manifest'
-      });
+    if (manifest && manifest.theme_color) {
+      hasThemeColor = (!!manifest.theme_color.value);
     }
 
-    const matchingIcons = icons.sizeAtLeast(144, /** @type {!Manifest} */ (manifest));
-    const foundSizesDebug = matchingIcons.length ?
-        `Found icons of sizes: ${matchingIcons}` : undefined;
-    return ManifestIconsMin144.generateAuditResult({
-      value: !!matchingIcons.length,
-      debugString: foundSizesDebug
+    return ManifestThemeColor.generateAuditResult({
+      value: hasThemeColor
     });
   }
 }
 
-module.exports = ManifestIconsMin144;
-
+module.exports = ManifestThemeColor;
